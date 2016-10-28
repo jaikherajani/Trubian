@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Trubian</string>
+    <string name="nav_logout">Log Out</string>
+</resources>
