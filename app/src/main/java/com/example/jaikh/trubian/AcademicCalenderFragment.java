@@ -4,10 +4,15 @@ import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.CalendarView;
+import android.widget.RelativeLayout;
 
 /**
  * Created by jaikh on 28-10-2016.
@@ -26,7 +31,15 @@ public class AcademicCalenderFragment extends Fragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         // Setup any handles to view objects here
         // EditText etFoo = (EditText) view.findViewById(R.id.etFoo);
-        CalendarView calendarView = (CalendarView) view.findViewById(R.id.calendarView);
-
+        //CalendarView calendarView = (CalendarView) view.findViewById(R.id.calendarView);
+        WebView webView = (WebView) view.findViewById(R.id.web_cal);
+        WebSettings webViewSettings = webView.getSettings();
+        webViewSettings.setJavaScriptEnabled(true);
+        int height =this.getResources().getDisplayMetrics().heightPixels;
+        int width =this.getResources().getDisplayMetrics().widthPixels;
+        Log.i("Height","is "+height);
+        Log.i("width","is "+width);
+        webView.loadData("<iframe src=\"https://calendar.google.com/calendar/embed?src=n9h2rd7k61aor8s11kpgvbo0fg%40group.calendar.google.com&ctz=Asia/Calcutta\" style=\"border: 0\" width=\'"+(width/3)+"\' height=\'"+(height/4)+"\' frameborder=\"0\" scrolling=\"no\"></iframe>","text/html","utf-8");
+        Log.i("URL",webView.getUrl().toString());
     }
 }

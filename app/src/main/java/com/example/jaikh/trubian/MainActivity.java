@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN =1;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
+    private Firebase mRootref;
     private static final String TAG = "SIGN_IN";
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mGoogleButton = (SignInButton) findViewById(R.id.sign_in_button);
+        mGoogleButton.setSize(SignInButton.SIZE_WIDE);
+        mGoogleButton.setColorScheme(SignInButton.COLOR_AUTO);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
             {
                 if(firebaseAuth.getCurrentUser() != null)
                 {
+                    isUserRegistered();
                     startActivity(new Intent(MainActivity.this,MainPage.class));
                 }
             }
@@ -134,4 +139,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void isUserRegistered()
+    {
+        mRootref = new Firebase("https://trubian-2ca81.firebaseio.com/STUDENTS");
+        Log.d("isUserRegistered",mRootref.startAt("Jai Kumar Kherajani").toString());
+        //return true;
+    }
+
 }

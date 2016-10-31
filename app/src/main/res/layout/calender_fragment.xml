@@ -3,13 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <CalendarView
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:elevation="10dp"
+        android:clickable="false"
+        android:id="@+id/web_cal"/>
+
+    <!--<CalendarView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:elevation="10dp"
         android:clickable="false"
-        android:id="@+id/calendarView" />
+        android:id="@+id/calendarView" />-->
 
 </RelativeLayout>
