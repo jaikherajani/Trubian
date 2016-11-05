@@ -1,5 +1,6 @@
 package com.example.jaikh.trubian;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -23,15 +26,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private SignInButton mGoogleButton;
-    private static final int RC_SIGN_IN =1;
+    private static final int RC_SIGN_IN = 1;
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
-    private Firebase mRootref;
     private static final String TAG = "SIGN_IN";
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private ProgressDialog progressDialog;
+    private String user_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +48,15 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener(){
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
-            {
-                if(firebaseAuth.getCurrentUser() != null)
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() != null) {
+                    System.out.println("User is signed in as "+ firebaseAuth.getCurrentUser());
+                }
+                else
                 {
-                    isUserRegistered();
-                    startActivity(new Intent(MainActivity.this,MainPage.class));
+                    System.out.println("User is signed out");
                 }
             }
         };
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Sign-In with Google failed!", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         mGoogleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart()
-    {
+    protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
@@ -119,6 +124,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+        progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Authenticating...");
+        progressDialog.show();
+        user_name = account.getDisplayName();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -126,12 +136,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-
+                        isUserRegistered();
+                        progressDialog.dismiss();
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
+                            progressDialog.dismiss();
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -140,11 +152,29 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void isUserRegistered()
-    {
-        mRootref = new Firebase("https://trubian-2ca81.firebaseio.com/STUDENTS");
-        Log.d("isUserRegistered",mRootref.startAt("Jai Kumar Kherajani").toString());
-        //return true;
-    }
+    private void isUserRegistered() {
+        //user_name="JAYESH";
+        Firebase ref = new Firebase("https://trubian-2ca81.firebaseio.com/students/"+user_name);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() !=null)
+                {
+                    System.out.println("User Exists ! Sign-In");
+                    startActivity(new Intent(MainActivity.this,MainPage.class));
+                }
+                else
+                {
+                    System.out.println("User DOES NOT Exists ! Register");
+                    startActivity(new Intent(MainActivity.this,Register.class));
+                }
+            }
 
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
 }
+

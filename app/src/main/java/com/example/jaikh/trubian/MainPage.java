@@ -15,15 +15,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 public class MainPage extends AppCompatActivity {
     private FirebaseUser mUser;
     private TextView user_name_tv;
+    private TextView status;
     private ImageView user_picture_iv;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -57,6 +64,7 @@ public class MainPage extends AppCompatActivity {
                 });
         // We can now look up items within the header if needed
         user_name_tv = (TextView) headerLayout.findViewById(R.id.user_name_tv);
+        status = (TextView) findViewById(R.id.status);
         user_picture_iv = (ImageView) headerLayout.findViewById(R.id.user_picture_iv);
         displayUserDetails();
     }
@@ -81,10 +89,7 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent a = new Intent(Intent.ACTION_MAIN);
-        a.addCategory(Intent.CATEGORY_HOME);
-        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
+       this.finishAffinity();
     }
 
     private void itemClicked(String selected)
@@ -93,8 +98,12 @@ public class MainPage extends AppCompatActivity {
       {
           case "Log Out":
               FirebaseAuth.getInstance().signOut();
-              Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
-              startActivity(new Intent(MainPage.this,MainActivity.class));
+              //Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
+              //startActivity(new Intent(MainPage.this,MainActivity.class));
+              Intent i = getBaseContext().getPackageManager()
+                      .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+              i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              startActivity(i);
               break;
           case "Academic Calender":
               AcademicCalenderFragment academicCalenderFragment = new AcademicCalenderFragment();
