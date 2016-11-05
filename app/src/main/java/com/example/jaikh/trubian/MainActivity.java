@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isUserRegistered() {
-        //user_name="JAYESH";
+        user_name="JAYESH";
         Firebase ref = new Firebase("https://trubian-2ca81.firebaseio.com/students/"+user_name);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
