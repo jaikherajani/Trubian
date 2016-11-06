@@ -31,16 +31,19 @@ public class MainActivity extends AppCompatActivity {
 
     private SignInButton mGoogleButton;
     private static final int RC_SIGN_IN = 1;
-    private GoogleApiClient mGoogleApiClient;
+    public GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
     private static final String TAG = "SIGN_IN";
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog progressDialog;
     private String user_name;
+    //private Boolean status = true;
+    private boolean status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         mGoogleButton = (SignInButton) findViewById(R.id.sign_in_button);
         mGoogleButton.setSize(SignInButton.SIZE_WIDE);
@@ -61,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        if(mAuth.getCurrentUser() != null)
+            startActivity(new Intent(MainActivity.this,MainPage.class));
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -85,18 +90,44 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent a = new Intent(Intent.ACTION_MAIN);
-        a.addCategory(Intent.CATEGORY_HOME);
-        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    private void isUserRegistered() {
+        //user_name="JAYESH";
+        System.out.println("User name received in the method is - "+user_name);
+        Firebase ref = new Firebase("https://trubian-2ca81.firebaseio.com/students/"+user_name);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() !=null)
+                {
+                    System.out.println("User Exists ! Sign-In");
+                    startActivity(new Intent(MainActivity.this,MainPage.class));
+                }
+                else
+                {
+                    System.out.println("User DOES NOT Exists ! Register");
+                    startActivity(new Intent(MainActivity.this,Register.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Toast.makeText(MainActivity.this, "Sign-In failed due to "+firebaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
     private void signIn() {
@@ -114,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
             if (result.isSuccess()) {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
+                user_name = account.getDisplayName();
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
@@ -124,11 +156,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+        //status = isUserRegistered();
         progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
-        user_name = account.getDisplayName();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -152,29 +184,5 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void isUserRegistered() {
-        //user_name="JAYESH";
-        Firebase ref = new Firebase("https://trubian-2ca81.firebaseio.com/students/"+user_name);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() !=null)
-                {
-                    System.out.println("User Exists ! Sign-In");
-                    startActivity(new Intent(MainActivity.this,MainPage.class));
-                }
-                else
-                {
-                    System.out.println("User DOES NOT Exists ! Register");
-                    startActivity(new Intent(MainActivity.this,Register.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
-    }
 }
 

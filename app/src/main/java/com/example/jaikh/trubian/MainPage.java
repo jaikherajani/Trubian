@@ -30,7 +30,6 @@ import com.squareup.picasso.Picasso;
 public class MainPage extends AppCompatActivity {
     private FirebaseUser mUser;
     private TextView user_name_tv;
-    private TextView status;
     private ImageView user_picture_iv;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -64,7 +63,6 @@ public class MainPage extends AppCompatActivity {
                 });
         // We can now look up items within the header if needed
         user_name_tv = (TextView) headerLayout.findViewById(R.id.user_name_tv);
-        status = (TextView) findViewById(R.id.status);
         user_picture_iv = (ImageView) headerLayout.findViewById(R.id.user_picture_iv);
         displayUserDetails();
     }
@@ -89,7 +87,9 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-       this.finishAffinity();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 
     private void itemClicked(String selected)
@@ -98,12 +98,12 @@ public class MainPage extends AppCompatActivity {
       {
           case "Log Out":
               FirebaseAuth.getInstance().signOut();
-              //Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
-              //startActivity(new Intent(MainPage.this,MainActivity.class));
-              Intent i = getBaseContext().getPackageManager()
+              Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
+              startActivity(new Intent(MainPage.this,MainActivity.class));
+              /*Intent i = getBaseContext().getPackageManager()
                       .getLaunchIntentForPackage( getBaseContext().getPackageName() );
               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-              startActivity(i);
+              startActivity(i);*/
               break;
           case "Academic Calender":
               AcademicCalenderFragment academicCalenderFragment = new AcademicCalenderFragment();
