@@ -27,12 +27,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainPage extends AppCompatActivity {
     private FirebaseUser mUser;
     private TextView user_name_tv;
-    private ImageView user_picture_iv;
+    private CircleImageView user_picture_iv;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +52,24 @@ public class MainPage extends AppCompatActivity {
         //fetching details of Authenticated user
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerLayout = navigationView.getHeaderView(0);
         //setting up selected item listener
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        itemClicked(menuItem.toString());
+                        itemClicked(menuItem);
                         mDrawerLayout.closeDrawers();
                         return true;
                     }
                 });
         // We can now look up items within the header if needed
         user_name_tv = (TextView) headerLayout.findViewById(R.id.user_name_tv);
-        user_picture_iv = (ImageView) headerLayout.findViewById(R.id.user_picture_iv);
+        user_picture_iv = (CircleImageView) headerLayout.findViewById(R.id.user_picture_iv);
         displayUserDetails();
+        NewsFeedFragment newsFeedFragment1 = new NewsFeedFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, newsFeedFragment1).commit();
     }
 
     //Method that binds toggle button to the navigation drawer
@@ -92,23 +97,35 @@ public class MainPage extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void itemClicked(String selected)
+    private void itemClicked(MenuItem menuItem)
     {
-      switch(selected)
+        int size = navigationView.getMenu().size();
+        for (int i = 0; i < size; i++) {
+            navigationView.getMenu().getItem(i).setChecked(false);
+        }
+        menuItem.setChecked(true);
+      switch(menuItem.toString())
       {
           case "Log Out":
               FirebaseAuth.getInstance().signOut();
               Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
               startActivity(new Intent(MainPage.this,MainActivity.class));
-              /*Intent i = getBaseContext().getPackageManager()
-                      .getLaunchIntentForPackage( getBaseContext().getPackageName() );
-              i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-              startActivity(i);*/
+              break;
+          case "Time Table":
+              TimeTableFragment timeTableFragment = new TimeTableFragment();
+              getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, timeTableFragment).commit();
+              break;
+          case "News Feed":
+              NewsFeedFragment newsFeedFragment = new NewsFeedFragment();
+              getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, newsFeedFragment).commit();
               break;
           case "Academic Calender":
               AcademicCalenderFragment academicCalenderFragment = new AcademicCalenderFragment();
               getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, academicCalenderFragment).commit();
               break;
+
+          /*mDrawerList.setItemChecked(position, true);
+    setTitle(mPlanetTitles[position]);*/
       }
     }
 }

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:checkableBehavior="single">
 
     <item
         android:id="@+id/nav_profile"
         android:icon="@mipmap/ic_account_circle_black_48dp"
         android:title="My Account"/>
+
+    <item
+        android:id="@+id/nav_news_feed"
+        android:icon="@mipmap/ic_dvr_black_48dp"
+        android:title="News Feed"/>
 
     <item
         android:id="@+id/nav_reports"

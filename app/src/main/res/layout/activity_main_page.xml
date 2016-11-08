@@ -13,6 +13,8 @@
         </FrameLayout>
 
     <android.support.design.widget.NavigationView
+        android:clickable="true"
+        android:elevation="16dp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/nav_view"
