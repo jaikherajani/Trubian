@@ -53,7 +53,7 @@ public class Register extends AppCompatActivity {
 
         if(e_key!=null && user_name!=null)
         {
-            Firebase studentsRef = new Firebase("https://trubian-2ca81.firebaseio.com/students/");
+            Firebase studentsRef = new Firebase("https://trubian-6f4e4.firebaseio.com/students/");
             Map<String, String> userData = new HashMap<String, String>();
             userData.put("name", user_name);
             userData.put("enrollment_number", e_key);

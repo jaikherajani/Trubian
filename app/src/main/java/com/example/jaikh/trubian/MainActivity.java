@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private void isUserRegistered() {
         //user_name="JAYESH";
         System.out.println("User name received in the method is - "+user_name);
-        Firebase ref = new Firebase("https://trubian-2ca81.firebaseio.com/students/"+user_name);
+        Firebase ref = new Firebase("https://trubian-6f4e4.firebaseio.com/students/"+user_name);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

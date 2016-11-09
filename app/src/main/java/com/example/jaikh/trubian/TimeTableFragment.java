@@ -56,8 +56,8 @@ public class TimeTableFragment extends Fragment {
         Download = (AppCompatButton)view.findViewById(R.id.download);
 
         // Initialize Storage
-        mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://trubian-2ca81.appspot.com/Time_Tables/");
-        mStorageRef.child("TT5.PNG").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://trubian-6f4e4.appspot.com/Time_Tables/");
+        mStorageRef.child("CS141.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
