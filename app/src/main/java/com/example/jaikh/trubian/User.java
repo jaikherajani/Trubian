@@ -1,5 +1,7 @@
 package com.example.jaikh.trubian;
 
+import java.util.Map;
+
 /**
  * Created by jaikh on 03-11-2016.
  */
@@ -8,9 +10,10 @@ public class User {
     String enrollment_number;
     String name;
 
-    public User()
+    public User(Map<String, String> values)
     {
-
+        name=values.get("name");
+        enrollment_number=values.get("enrollment_number");
     }
 
     public String getEnrollmentnumber()

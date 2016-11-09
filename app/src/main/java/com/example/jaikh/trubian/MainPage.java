@@ -1,30 +1,18 @@
 package com.example.jaikh.trubian;
 
 import android.content.Intent;
+import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewDebug;
-import android.view.ViewDebug.IntToString;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.Query;
 import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -36,6 +24,7 @@ public class MainPage extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
+    private String savechoice ="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +61,19 @@ public class MainPage extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, newsFeedFragment1).commit();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("savechoice",savechoice);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        savechoice = savedInstanceState.getString("savechoice",savechoice);
+        user_choice(savechoice);
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
     //Method that binds toggle button to the navigation drawer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -104,28 +106,37 @@ public class MainPage extends AppCompatActivity {
             navigationView.getMenu().getItem(i).setChecked(false);
         }
         menuItem.setChecked(true);
-      switch(menuItem.toString())
-      {
-          case "Log Out":
-              FirebaseAuth.getInstance().signOut();
-              Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
-              startActivity(new Intent(MainPage.this,MainActivity.class));
-              break;
-          case "Time Table":
-              TimeTableFragment timeTableFragment = new TimeTableFragment();
-              getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, timeTableFragment).commit();
-              break;
-          case "News Feed":
-              NewsFeedFragment newsFeedFragment = new NewsFeedFragment();
-              getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, newsFeedFragment).commit();
-              break;
-          case "Academic Calender":
-              AcademicCalenderFragment academicCalenderFragment = new AcademicCalenderFragment();
-              getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, academicCalenderFragment).commit();
-              break;
+        savechoice = menuItem.toString();
+      user_choice(savechoice);
+    }
+
+    private void user_choice(String savechoice) {
+        switch(savechoice)
+        {
+            case "Log Out":
+                FirebaseAuth.getInstance().signOut();
+                Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainPage.this,MainActivity.class));
+                break;
+            case "Time Table":
+                TimeTableFragment timeTableFragment = new TimeTableFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, timeTableFragment).commit();
+                break;
+            case "My Profile":
+                Account accountFragment = new Account();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, accountFragment).commit();
+                break;
+            case "News Feed":
+                NewsFeedFragment newsFeedFragment = new NewsFeedFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, newsFeedFragment).commit();
+                break;
+            case "Academic Calender":
+                AcademicCalenderFragment academicCalenderFragment = new AcademicCalenderFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, academicCalenderFragment).commit();
+                break;
 
           /*mDrawerList.setItemChecked(position, true);
     setTitle(mPlanetTitles[position]);*/
-      }
+        }
     }
 }
