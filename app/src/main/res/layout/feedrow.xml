@@ -38,15 +38,44 @@
                 android:textColor="#000"
                 android:textStyle="bold"/>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/post_branch"
-                android:text="The branch goes here...."
-                android:textSize="20sp"
-                android:layout_margin="5dp"
-                tools:background="@color/cardview_light_background"
-                android:textColor="#000" />
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/post_branch"
+                    android:text="for"
+                    android:textSize="15sp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    tools:background="@color/cardview_light_background"
+                    android:textColor="#000" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/post_by"
+                    android:text="by"
+                    android:textSize="15sp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    tools:background="@color/cardview_light_background"
+                    android:textColor="#000" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/post_on"
+                    android:text="on"
+                    android:textSize="15sp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    tools:background="@color/cardview_light_background"
+                    android:textColor="#000" />
+
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"

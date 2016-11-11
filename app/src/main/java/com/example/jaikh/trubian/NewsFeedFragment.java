@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +57,7 @@ public class NewsFeedFragment extends Fragment {
                 Feed.class,
                 R.layout.feedrow,
                 FeedViewHolder.class,
-                mDatabase
+                mDatabase.orderByChild("time_stamp")
 
 
         ) {
@@ -67,6 +68,8 @@ public class NewsFeedFragment extends Fragment {
                 viewHolder.setBranch(model.getBranch());
                 viewHolder.setDesc(model.getDesc());
                 viewHolder.setImage(getContext(),model.getImage());
+                viewHolder.setBy(model.getBy());
+                viewHolder.setOn(model.getOn());
 
             }
         };
@@ -103,8 +106,15 @@ public class NewsFeedFragment extends Fragment {
             ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
             Picasso.with(ctx).load(image).into(post_image);
 
+        }
+        public void setBy(String by){
+            TextView post_title = (TextView) mView.findViewById(R.id.post_by);
+            post_title.setText(by);
 
-
+        }
+        public void setOn(long on){
+            TextView post_title = (TextView) mView.findViewById(R.id.post_on);
+            post_title.setText(DateFormat.format("dd/MM/yyyy hh:mm:ss", on).toString());
         }
 
 

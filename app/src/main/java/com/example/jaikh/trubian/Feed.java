@@ -10,17 +10,21 @@ public class Feed {
     private String branch;
     private String desc;
     private String image;
+    private String by;
+    private long on;
 
     public Feed(){
 
 
     }
 
-    public Feed(String title, String branch, String desc, String image) {
+    public Feed(String title, String branch, String desc, String image,String by, long on) {
         this.title = title;
         this.branch = branch;
         this.desc = desc;
         this.image = image;
+        this.by = by;
+        this.on = on;
     }
 
     public String getImage() {
@@ -53,6 +57,22 @@ public class Feed {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getBy() {
+        return by;
+    }
+
+    public void setBy(String by) {
+        this.by = by;
+    }
+
+    public long getOn() {
+        return on;
+    }
+
+    public void setOn(long on) {
+        this.on = on;
     }
 
 
