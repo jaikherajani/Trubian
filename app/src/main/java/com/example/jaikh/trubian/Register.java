@@ -6,15 +6,21 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
 import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.content.ContentValues.TAG;
 
 public class Register extends AppCompatActivity {
 
@@ -23,6 +29,7 @@ public class Register extends AppCompatActivity {
     private AppCompatButton register;
     private String user_name,e_key;
     private FirebaseUser mUser;
+    Firebase studentsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,11 +67,12 @@ public class Register extends AppCompatActivity {
             studentsRef = studentsRef.child(mUser.getDisplayName());
             studentsRef.setValue(userData);
 
-            Toast.makeText(this, "Registered! Signing In.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Registered! Please Sign In.", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(Register.this,MainActivity.class));
         }
         else
-        Toast.makeText(this, "Kindly fill all values properly !", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Kindly fill all values properly !", Toast.LENGTH_SHORT).show();
     }
+
 
 }
