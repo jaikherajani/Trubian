@@ -5,13 +5,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -33,22 +34,20 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.io.File;
 import java.util.Map;
 
-import static android.content.ContentValues.TAG;
-
 
 public class MainActivity extends AppCompatActivity {
 
-    private SignInButton mGoogleButton;
     private static final int RC_SIGN_IN = 1;
-    public GoogleApiClient mGoogleApiClient;
-    private FirebaseAuth mAuth;
     private static final String TAG = "SIGN_IN";
+    private static final int PERMS_REQUEST_CODE = 123;
+    public GoogleApiClient mGoogleApiClient;
+    int i = 0;
+    private SignInButton mGoogleButton;
+    private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ProgressDialog progressDialog;
     private String user_name;
     private boolean status;
-    int i =0;
-    private static final int PERMS_REQUEST_CODE=123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +58,9 @@ public class MainActivity extends AppCompatActivity {
         mGoogleButton.setSize(SignInButton.SIZE_WIDE);
         mGoogleButton.setColorScheme(SignInButton.COLOR_AUTO);
 
-        if(hasPermissions()){
+        if (hasPermissions()) {
             makeFolder();
-        }
-        else{
+        } else {
             requestPerms();
         }
 
@@ -72,16 +70,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() != null) {
-                    System.out.println("User is signed in as "+ firebaseAuth.getCurrentUser());
-                }
-                else
-                {
+                    System.out.println("User is signed in as " + firebaseAuth.getCurrentUser());
+                } else {
                     System.out.println("User is signed out");
                 }
             }
         };
         //if(mAuth.getCurrentUser() != null)
-            //startActivity(new Intent(MainActivity.this,MainPage.class));
+        //startActivity(new Intent(MainActivity.this,MainPage.class));
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -101,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         mGoogleButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                i=0;
+                i = 0;
                 signIn();
             }
         });
@@ -114,23 +110,23 @@ public class MainActivity extends AppCompatActivity {
         mAuth.addAuthStateListener(mAuthListener);
     }
 
-    private boolean hasPermissions(){
+    private boolean hasPermissions() {
 
-        int res =0;
-        String[] permissions =new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        for(String perms : permissions){
+        int res = 0;
+        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        for (String perms : permissions) {
             res = checkCallingOrSelfPermission(perms);
-            if(!(res== PackageManager.PERMISSION_GRANTED)){
+            if (!(res == PackageManager.PERMISSION_GRANTED)) {
                 return false;
             }
         }
         return true;
     }
 
-    private void requestPerms(){
-        String[] permissions =new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            requestPermissions(permissions,PERMS_REQUEST_CODE);
+    private void requestPerms() {
+        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, PERMS_REQUEST_CODE);
         }
 
     }
@@ -139,10 +135,10 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         boolean allowed = true;
 
-        switch (requestCode){
+        switch (requestCode) {
             case PERMS_REQUEST_CODE:
 
-                for (int res : grantResults){
+                for (int res : grantResults) {
                     // if user granted all permissions.
                     allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
                 }
@@ -154,34 +150,32 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        if (allowed){
+        if (allowed) {
             //user granted all permissions we can perform our task.
             makeFolder();
-        }
-        else {
+        } else {
             // we will give warning to user that they haven't granted permissions.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
 
-    private void makeFolder(){
-        File file =new File(Environment.getExternalStorageDirectory().getAbsolutePath(),"TrubianAppDownloads");
-        if(!file.exists()){
+    private void makeFolder() {
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "TrubianAppDownloads");
+        if (!file.exists()) {
             Boolean ff = file.mkdir();
-            if(ff){
-                Toast.makeText(MainActivity.this,"Thanks for allowing permissions",Toast.LENGTH_SHORT).show();
+            if (ff) {
+                Toast.makeText(MainActivity.this, "Thanks for allowing permissions", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(MainActivity.this, "Permissions have been denied. ", Toast.LENGTH_LONG).show();
 
             }
-            else{
-                Toast.makeText(MainActivity.this,"Permissions have been denied. ",Toast.LENGTH_LONG).show();
-
-            }}
-        else{
-            Toast.makeText(MainActivity.this,"Welcome Back",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "Welcome Back", Toast.LENGTH_SHORT).show();
 
         }
 
@@ -220,24 +214,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isUserRegistered() {
-        AsyncTask<Void,Void,Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                Firebase studentsRef = new Firebase("https://trubian-6f4e4.firebaseio.com/students/"+user_name);
+                Firebase studentsRef = new Firebase("https://trubian-6f4e4.firebaseio.com/students/" + user_name);
                 studentsRef.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Map<String, String> values = (Map<String,String>) dataSnapshot.getValue();
+                        Map<String, String> values = (Map<String, String>) dataSnapshot.getValue();
                         Log.d(TAG, "Value is: " + values);
-                        if(values==null)
-                        {
+                        if (values == null) {
                             status = true;
                             System.out.println("Values " + values);
                             System.out.println("Status " + status);
                             Proceed();
-                        }
-                        else
-                        {
+                        } else {
                             status = false;
                             System.out.println("Values " + values);
                             System.out.println("Status " + status);
@@ -247,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(FirebaseError firebaseError) {
-                        Toast.makeText(MainActivity.this, "Error : "+firebaseError, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Error : " + firebaseError, Toast.LENGTH_SHORT).show();
                     }
                 });
                 return true;
@@ -286,10 +277,9 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void Proceed()
-    {
-            i=++i;
-        if(i==2) {
+    public void Proceed() {
+        i = ++i;
+        if (i == 2) {
             progressDialog.dismiss();
             if (status) {
                 System.out.println("Status received is " + status);

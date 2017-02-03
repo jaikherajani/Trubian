@@ -1,35 +1,29 @@
 package com.example.jaikh.trubian;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.CardView;
-import android.support.design.widget.TextInputEditText;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.content.ContentValues.TAG;
-
 public class Register extends AppCompatActivity {
 
-    private CardView register_card;
-    private TextInputEditText user_name_et,e_key_et;
-    private AppCompatButton register;
-    private String user_name,e_key;
-    private FirebaseUser mUser;
     Firebase studentsRef;
+    private CardView register_card;
+    private TextInputEditText user_name_et, e_key_et;
+    private AppCompatButton register;
+    private String user_name, e_key;
+    private FirebaseUser mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +33,10 @@ public class Register extends AppCompatActivity {
         //fetching details of Authenticated user
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        register_card = (CardView)findViewById(R.id.register_card);
+        register_card = (CardView) findViewById(R.id.register_card);
         user_name_et = (TextInputEditText) findViewById(R.id.name);
         e_key_et = (TextInputEditText) findViewById(R.id.e_key);
-        register = (AppCompatButton)findViewById(R.id.register);
+        register = (AppCompatButton) findViewById(R.id.register);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,8 +52,7 @@ public class Register extends AppCompatActivity {
         user_name = user_name_et.getText().toString();
         e_key = e_key_et.getText().toString();
 
-        if(e_key!=null && user_name!=null)
-        {
+        if (e_key != null && user_name != null) {
             Firebase studentsRef = new Firebase("https://trubian-6f4e4.firebaseio.com/students/");
             Map<String, String> userData = new HashMap<String, String>();
             userData.put("name", user_name);
@@ -68,9 +61,8 @@ public class Register extends AppCompatActivity {
             studentsRef.setValue(userData);
 
             Toast.makeText(this, "Registered! Please Sign In.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Register.this,MainActivity.class));
-        }
-        else
+            startActivity(new Intent(Register.this, MainActivity.class));
+        } else
             Toast.makeText(this, "Kindly fill all values properly !", Toast.LENGTH_SHORT).show();
     }
 

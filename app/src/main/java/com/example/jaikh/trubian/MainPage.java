@@ -1,16 +1,16 @@
 package com.example.jaikh.trubian;
 
 import android.content.Intent;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
@@ -24,7 +24,7 @@ public class MainPage extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
-    private String savechoice ="";
+    private String savechoice = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +33,7 @@ public class MainPage extends AppCompatActivity {
 
         //Navigation Bar Toggle settings
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mToggle = new ActionBarDrawerToggle(this,mDrawerLayout,R.string.app_name,R.string.app_name);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.app_name, R.string.app_name);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -63,13 +63,13 @@ public class MainPage extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putString("savechoice",savechoice);
+        savedInstanceState.putString("savechoice", savechoice);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        savechoice = savedInstanceState.getString("savechoice",savechoice);
+        savechoice = savedInstanceState.getString("savechoice", savechoice);
         user_choice(savechoice);
         super.onRestoreInstanceState(savedInstanceState);
     }
@@ -77,15 +77,13 @@ public class MainPage extends AppCompatActivity {
     //Method that binds toggle button to the navigation drawer
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item))
-        {
+        if (mToggle.onOptionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayUserDetails()
-    {
+    private void displayUserDetails() {
         user_name_tv.setText(mUser.getDisplayName());
         Picasso.with(getApplicationContext())
                 .load(mUser.getPhotoUrl())
@@ -99,24 +97,22 @@ public class MainPage extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void itemClicked(MenuItem menuItem)
-    {
+    private void itemClicked(MenuItem menuItem) {
         int size = navigationView.getMenu().size();
         for (int i = 0; i < size; i++) {
             navigationView.getMenu().getItem(i).setChecked(false);
         }
         menuItem.setChecked(true);
         savechoice = menuItem.toString();
-      user_choice(savechoice);
+        user_choice(savechoice);
     }
 
     private void user_choice(String savechoice) {
-        switch(savechoice)
-        {
+        switch (savechoice) {
             case "Log Out":
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainPage.this,MainActivity.class));
+                startActivity(new Intent(MainPage.this, MainActivity.class));
                 break;
             case "Time Table":
                 TimeTableFragment timeTableFragment = new TimeTableFragment();

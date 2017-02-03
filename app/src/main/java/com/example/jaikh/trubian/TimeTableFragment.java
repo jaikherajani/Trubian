@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,7 +21,6 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +36,7 @@ public class TimeTableFragment extends Fragment {
     private AppCompatImageView time_table_iv;
     private StorageReference mStorageRef;
     private AppCompatButton Download;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Defines the xml file for the fragment
@@ -53,7 +52,7 @@ public class TimeTableFragment extends Fragment {
 
         // Initialize ImageView
         time_table_iv = (AppCompatImageView) view.findViewById(R.id.timetable_iv);
-        Download = (AppCompatButton)view.findViewById(R.id.download);
+        Download = (AppCompatButton) view.findViewById(R.id.download);
 
         // Initialize Storage
         mStorageRef = FirebaseStorage.getInstance().getReferenceFromUrl("gs://trubian-6f4e4.appspot.com/Time_Tables/");
@@ -74,13 +73,12 @@ public class TimeTableFragment extends Fragment {
         });
         // Setup any handles to view objects here
 
-                //new DownloadFileFromURL().execute(mStorageRef.getDownloadUrl().toString());
+        //new DownloadFileFromURL().execute(mStorageRef.getDownloadUrl().toString());
 
 
     }
 
-    public void startDownload(final Uri uri)
-    {
+    public void startDownload(final Uri uri) {
         //String url = uri.toString();
         Download.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +94,7 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
     /**
      * Before starting background thread
-     * */
+     */
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -115,13 +113,13 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
     /**
      * Downloading file in background thread
-     * */
+     */
     @Override
     protected String doInBackground(String... f_url) {
         int count;
         try {
 
-                // Get the directory for the user's public pictures directory.
+            // Get the directory for the user's public pictures directory.
             String root = Environment.getExternalStorageDirectory().toString();
 
             isExternalStorageWritable();
@@ -138,7 +136,7 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
             InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
             // Output stream to write file
-            OutputStream output = new FileOutputStream(root+"/Pictures/TimeTable.png");
+            OutputStream output = new FileOutputStream(root + "/Pictures/TimeTable.png");
             byte data[] = new byte[1024];
 
             long total = 0;
@@ -165,10 +163,9 @@ class DownloadFileFromURL extends AsyncTask<String, String, String> {
     }
 
 
-
     /**
      * After completing background task
-     * **/
+     **/
     @Override
     protected void onPostExecute(String file_url) {
         System.out.println("Downloaded");

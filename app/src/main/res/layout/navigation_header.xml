@@ -3,27 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
-    android:padding="10dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="10dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/user_picture_iv"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
         android:scaleType="centerCrop"
-        app:civ_border_width="2dp"
         app:civ_border_color="#00000000"
-        android:id="@+id/user_picture_iv"/>
+        app:civ_border_width="2dp" />
 
     <TextView
-        android:layout_below="@id/user_picture_iv"
+        android:id="@+id/user_name_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/user_picture_iv"
         android:layout_centerHorizontal="true"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:id="@+id/user_name_tv" />
+        android:textSize="20sp" />
 
 </RelativeLayout>

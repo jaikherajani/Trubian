@@ -44,7 +44,7 @@ public class NewsFeedFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Feed");
-        mFeedlist =(RecyclerView) view.findViewById(R.id.feed_list);
+        mFeedlist = (RecyclerView) view.findViewById(R.id.feed_list);
         mFeedlist.setHasFixedSize(true);
         mFeedlist.setLayoutManager(new LinearLayoutManager(getContext()));
     }
@@ -52,7 +52,7 @@ public class NewsFeedFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseRecyclerAdapter<Feed,FeedViewHolder> FirebaseRecyclerAdapter=new FirebaseRecyclerAdapter<Feed, FeedViewHolder>(
+        FirebaseRecyclerAdapter<Feed, FeedViewHolder> FirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Feed, FeedViewHolder>(
 
                 Feed.class,
                 R.layout.feedrow,
@@ -67,7 +67,7 @@ public class NewsFeedFragment extends Fragment {
                 viewHolder.setTitle(model.getTitle());
                 viewHolder.setBranch(model.getBranch());
                 viewHolder.setDesc(model.getDesc());
-                viewHolder.setImage(getContext(),model.getImage());
+                viewHolder.setImage(getContext(), model.getImage());
                 viewHolder.setBy(model.getBy());
                 viewHolder.setOn(model.getOn());
 
@@ -81,38 +81,42 @@ public class NewsFeedFragment extends Fragment {
 
         public FeedViewHolder(View itemView) {
             super(itemView);
-            mView=itemView;
+            mView = itemView;
         }
 
-        public void setTitle(String title){
+        public void setTitle(String title) {
             TextView post_title = (TextView) mView.findViewById(R.id.post_title);
             post_title.setText(title);
 
 
         }
-        public void setBranch(String branch){
+
+        public void setBranch(String branch) {
             TextView post_title = (TextView) mView.findViewById(R.id.post_branch);
             post_title.setText(branch);
 
 
         }
-        public void setDesc(String desc){
+
+        public void setDesc(String desc) {
             TextView post_title = (TextView) mView.findViewById(R.id.post_desc);
             post_title.setText(desc);
 
         }
 
-        public void setImage(Context ctx, String image){
+        public void setImage(Context ctx, String image) {
             ImageView post_image = (ImageView) mView.findViewById(R.id.post_image);
             Picasso.with(ctx).load(image).into(post_image);
 
         }
-        public void setBy(String by){
+
+        public void setBy(String by) {
             TextView post_title = (TextView) mView.findViewById(R.id.post_by);
             post_title.setText(by);
 
         }
-        public void setOn(long on){
+
+        public void setOn(long on) {
             TextView post_title = (TextView) mView.findViewById(R.id.post_on);
             post_title.setText(DateFormat.format("dd/MM/yyyy hh:mm:ss", on).toString());
         }

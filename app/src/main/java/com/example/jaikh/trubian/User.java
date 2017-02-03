@@ -10,29 +10,24 @@ public class User {
     String enrollment_number;
     String name;
 
-    public User(Map<String, String> values)
-    {
-        name=values.get("name");
-        enrollment_number=values.get("enrollment_number");
+    public User(Map<String, String> values) {
+        name = values.get("name");
+        enrollment_number = values.get("enrollment_number");
     }
 
-    public String getEnrollmentnumber()
-    {
+    public String getEnrollmentnumber() {
         return enrollment_number;
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return name;
     }
 
-    public void setEnrollmentnumber()
-    {
+    public void setEnrollmentnumber() {
         this.enrollment_number = enrollment_number;
     }
 
-    public void setUsername()
-    {
+    public void setUsername() {
         this.name = name;
     }
 }

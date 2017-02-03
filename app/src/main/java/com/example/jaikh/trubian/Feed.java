@@ -13,12 +13,12 @@ public class Feed {
     private String by;
     private long on;
 
-    public Feed(){
+    public Feed() {
 
 
     }
 
-    public Feed(String title, String branch, String desc, String image,String by, long on) {
+    public Feed(String title, String branch, String desc, String image, String by, long on) {
         this.title = title;
         this.branch = branch;
         this.desc = desc;
