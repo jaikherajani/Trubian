@@ -1,6 +1,7 @@
 package com.example.jaikh.trubian;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -11,9 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -25,6 +26,7 @@ public class MainPage extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private NavigationView navigationView;
     private String savechoice = "";
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,7 @@ public class MainPage extends AppCompatActivity {
 
     private void displayUserDetails() {
         user_name_tv.setText(mUser.getDisplayName());
-        Picasso.with(getApplicationContext())
+        Glide.with(getApplicationContext())
                 .load(mUser.getPhotoUrl())
                 .into(user_picture_iv);
     }
@@ -111,6 +113,10 @@ public class MainPage extends AppCompatActivity {
         switch (savechoice) {
             case "Log Out":
                 FirebaseAuth.getInstance().signOut();
+                pref = getSharedPreferences("user", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("IS_USER_SIGNED_IN", false);
+                editor.commit();
                 Toast.makeText(this, "Log Out successful", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(MainPage.this, MainActivity.class));
                 break;

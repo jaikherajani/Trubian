@@ -1,7 +1,9 @@
 package com.example.jaikh.trubian;
 
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -13,19 +15,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+
+import static android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission;
 
 /**
  * Created by jaikh on 08-11-2016.
@@ -33,6 +39,7 @@ import java.net.URLConnection;
 
 public class TimeTableFragment extends Fragment {
 
+    private static final int PERMS_REQUEST_CODE = 123;
     private AppCompatImageView time_table_iv;
     private StorageReference mStorageRef;
     private AppCompatButton Download;
@@ -60,7 +67,7 @@ public class TimeTableFragment extends Fragment {
             @Override
             public void onSuccess(Uri uri) {
                 // Got the download URL for 'users/me/profile.png'
-                Picasso.with(getContext())
+                Glide.with(getContext())
                         .load(uri)
                         .into(time_table_iv);
                 startDownload(uri);
@@ -78,11 +85,83 @@ public class TimeTableFragment extends Fragment {
 
     }
 
+    private boolean hasPermissions() {
+
+        int res = 0;
+        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        for (String perms : permissions) {
+            res = checkCallingOrSelfPermission(getContext(), perms);
+            if (!(res == PackageManager.PERMISSION_GRANTED)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void requestPerms() {
+        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, PERMS_REQUEST_CODE);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean allowed = true;
+
+        switch (requestCode) {
+            case PERMS_REQUEST_CODE:
+
+                for (int res : grantResults) {
+                    // if user granted all permissions.
+                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
+                }
+
+                break;
+            default:
+                // if user not granted permissions.
+                allowed = false;
+                break;
+        }
+
+        if (allowed) {
+            //user granted all permissions we can perform our task.
+            makeFolder();
+        } else {
+            // we will give warning to user that they haven't granted permissions.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Toast.makeText(getContext(), "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    private void makeFolder() {
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "TrubianAppDownloads");
+        if (!file.exists()) {
+            Boolean ff = file.mkdir();
+            if (ff) {
+                Toast.makeText(getActivity(), "Thanks for allowing permissions", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(getActivity(), "Permissions have been denied. ", Toast.LENGTH_LONG).show();
+
+            }
+        }
+    }
+
     public void startDownload(final Uri uri) {
         //String url = uri.toString();
         Download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (hasPermissions()) {
+                    makeFolder();
+                } else {
+                    requestPerms();
+                }
                 //Toast.makeText(getContext(),uri.toString(), Toast.LENGTH_SHORT).show();
                 new DownloadFileFromURL().execute(uri.toString());
             }

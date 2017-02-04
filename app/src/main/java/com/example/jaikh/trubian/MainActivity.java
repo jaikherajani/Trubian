@@ -2,11 +2,9 @@ package com.example.jaikh.trubian;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -31,7 +29,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.io.File;
 import java.util.Map;
 
 
@@ -39,38 +36,35 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "SIGN_IN";
-    private static final int PERMS_REQUEST_CODE = 123;
     public GoogleApiClient mGoogleApiClient;
     int i = 0;
     private SignInButton mGoogleButton;
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ProgressDialog progressDialog;
     private String user_name;
     private boolean status;
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        pref = getSharedPreferences("user", MODE_PRIVATE);
+        if (pref.getBoolean("IS_USER_SIGNED_IN", false)) {
+            startActivity(new Intent(MainActivity.this, MainPage.class));
+        }
+
         mGoogleButton = (SignInButton) findViewById(R.id.sign_in_button);
         mGoogleButton.setSize(SignInButton.SIZE_WIDE);
         mGoogleButton.setColorScheme(SignInButton.COLOR_AUTO);
-
-        if (hasPermissions()) {
-            makeFolder();
-        } else {
-            requestPerms();
-        }
-
         mAuth = FirebaseAuth.getInstance();
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if (firebaseAuth.getCurrentUser() != null) {
-                    System.out.println("User is signed in as " + firebaseAuth.getCurrentUser());
+                    System.out.println("User is signed in as " + firebaseAuth.getCurrentUser().getEmail());
                 } else {
                     System.out.println("User is signed out");
                 }
@@ -104,82 +98,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
+  /*  @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    private boolean hasPermissions() {
-
-        int res = 0;
-        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        for (String perms : permissions) {
-            res = checkCallingOrSelfPermission(perms);
-            if (!(res == PackageManager.PERMISSION_GRANTED)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void requestPerms() {
-        String[] permissions = new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(permissions, PERMS_REQUEST_CODE);
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        boolean allowed = true;
-
-        switch (requestCode) {
-            case PERMS_REQUEST_CODE:
-
-                for (int res : grantResults) {
-                    // if user granted all permissions.
-                    allowed = allowed && (res == PackageManager.PERMISSION_GRANTED);
-                }
-
-                break;
-            default:
-                // if user not granted permissions.
-                allowed = false;
-                break;
-        }
-
-        if (allowed) {
-            //user granted all permissions we can perform our task.
-            makeFolder();
-        } else {
-            // we will give warning to user that they haven't granted permissions.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Toast.makeText(this, "Storage Permissions denied.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }
-    }
-
-    private void makeFolder() {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(), "TrubianAppDownloads");
-        if (!file.exists()) {
-            Boolean ff = file.mkdir();
-            if (ff) {
-                Toast.makeText(MainActivity.this, "Thanks for allowing permissions", Toast.LENGTH_SHORT).show();
-
-            } else {
-                Toast.makeText(MainActivity.this, "Permissions have been denied. ", Toast.LENGTH_LONG).show();
-
-            }
-        } else {
-            Toast.makeText(MainActivity.this, "Welcome Back", Toast.LENGTH_SHORT).show();
-
-        }
-
-    }
+        System.out.println("onStart()");
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }*/
 
     @Override
     public void onBackPressed() {
@@ -205,6 +129,11 @@ public class MainActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 user_name = account.getDisplayName();
                 isUserRegistered();
+                System.out.println("ProgressBar starts");
+                progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Authenticating...");
+                progressDialog.show();
                 firebaseAuthWithGoogle(account);
             } else {
                 // Google Sign In failed, update UI appropriately
@@ -214,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isUserRegistered() {
+        System.out.println("isUserRegistered()");
         AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -250,11 +180,6 @@ public class MainActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
         //status = isUserRegistered();
-        progressDialog = new ProgressDialog(MainActivity.this, R.style.AppTheme_Dark_Dialog);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage("Authenticating...");
-        progressDialog.show();
-
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -285,10 +210,24 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Status received is " + status);
                 startActivity(new Intent(MainActivity.this, Register.class));
             } else {
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putBoolean("IS_USER_SIGNED_IN", true);
+                editor.commit();
                 startActivity(new Intent(MainActivity.this, MainPage.class));
             }
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mAuth.removeAuthStateListener(mAuthStateListener);
+    }
 }
 
